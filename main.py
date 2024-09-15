@@ -6,6 +6,24 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
+from contextlib import asynccontextmanager
+
+from logs import logger
+
+# register startup and shutdown using lifespan Events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup event
+    logger.info("Startup Event Triggered")
+    print("Startup Event Triggered")
+    
+    yield
+
+    # shutdown event
+    logger.info("Shutdown Event Triggered")
+    # mongodb_client.close()
+    # qdrant_client.close()
+    print("Shutdown Event Triggered")
 
 app = FastAPI()
 app.title = "Name of Project"
