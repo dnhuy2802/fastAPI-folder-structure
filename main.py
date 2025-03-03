@@ -1,14 +1,13 @@
 import http
-import json
-
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from fastapi.exceptions import RequestValidationError
-from pydantic import ValidationError
 from contextlib import asynccontextmanager
 
 from logs import logger
+from config.config import CoreCFG
+from src.controllers import status
+
 
 # register startup and shutdown using lifespan Events
 @asynccontextmanager
@@ -21,18 +20,18 @@ async def lifespan(app: FastAPI):
 
     # shutdown event
     logger.info("Shutdown Event Triggered")
-    # mongodb_client.close()
-    # qdrant_client.close()
     print("Shutdown Event Triggered")
 
 app = FastAPI()
-app.title = "Name of Project"
+app.title = f"{CoreCFG.PROJECT_NAME}"
 app.version = "0.0.1"
+
+app.include_router(status.status_router)
 
 # Create a GET method that responds with HTML code
 @app.get('/', tags = ['home'])
 def message():
-    return HTMLResponse('<h1>Welcome to Name of Project API Services</h1>')
+    return HTMLResponse('<h1>Welcome to SHIV PPS Planning Optimization API Services</h1>')
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=7860, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=CoreCFG.APP_PORT)

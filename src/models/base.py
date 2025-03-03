@@ -1,0 +1,12 @@
+import uuid
+
+from typing import Annotated, Any, Optional
+from pydantic import BaseModel
+
+class GenericResponseModel(BaseModel):
+    """Generic response model for all responses"""
+    api_id: Annotated[Optional[str], "API Id"] = str(uuid.uuid4().hex)
+    error: Annotated[Optional[str], "Error Title"] = None
+    message: Annotated[Optional[str], "Message"] = None
+    data: Any = None
+    status_code: Annotated[Optional[int], "Status Code"] = None
