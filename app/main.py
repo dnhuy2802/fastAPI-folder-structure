@@ -1,12 +1,10 @@
-import http
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 from contextlib import asynccontextmanager
 
-from logs import logger
-from config.config import CoreCFG
-from src.controllers import status
+from utils.logger import logger
+from config import CoreCFG
+from routers.status import status_router
 
 
 # register startup and shutdown using lifespan Events
@@ -22,16 +20,22 @@ async def lifespan(app: FastAPI):
     logger.info("Shutdown Event Triggered")
     print("Shutdown Event Triggered")
 
-app = FastAPI()
-app.title = f"{CoreCFG.PROJECT_NAME}"
-app.version = "0.0.1"
+app = FastAPI(
+    title=f"{CoreCFG.app_name}",
+    version="0.0.1",
+    lifespan=lifespan
+)
 
-app.include_router(status.status_router)
+app.include_router(status_router)
 
 # Create a GET method that responds with HTML code
 @app.get('/', tags = ['home'])
 def message():
-    return HTMLResponse('<h1>Welcome to SHIV PPS Planning Optimization API Services</h1>')
+    return {
+        "message": f"{CoreCFG.app_name} API Services",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=CoreCFG.APP_PORT)
+    uvicorn.run("main:app", host=CoreCFG.app_host, port=CoreCFG.app_port, reload=CoreCFG.debug)

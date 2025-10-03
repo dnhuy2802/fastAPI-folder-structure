@@ -1,11 +1,11 @@
 import http
 from fastapi import APIRouter
-
-from src.models.base import GenericResponseModel
-from src.utils.helper import build_api_response
-
+ 
+from models.base import GenericResponseModel
+from utils.helper import build_api_response
+ 
 status_router = APIRouter(tags=["status"])
-
+ 
 @status_router.get('/health', tags=['status'], response_model=GenericResponseModel)
 def health():
     """
